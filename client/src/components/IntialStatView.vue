@@ -133,7 +133,8 @@ export default defineComponent({
         "showCharts": Boolean,
         "filtering": String,
         "pageType": String,
-        "short": Boolean
+        "short": Boolean,
+        "shortData": Object
     },
     components: {
         CdxCard,
@@ -193,12 +194,7 @@ export default defineComponent({
         const chartText = ref({});
         const chartDab = ref({});
         const lang = props.lang;
-        fetch( `/api/stats/${ lang }/${ props.start }/${ props.end }` ).then( 
-            ( r ) => {
-                return r.json();
-            }
-        ).then(
-            ( data ) => {
+        function parseAndUseData( data: any ) {
                 console.log( props )
                 const currentData = data['data'][data['data']['length'] - 1];
                 const dataBefore = data['data'][0];
@@ -363,7 +359,19 @@ export default defineComponent({
                 
                 loaded.value = true;
             }
-        )
+
+
+        if ( props.short && props.shortData ) {
+            parseAndUseData( props.shortData )
+        } else {
+            fetch( `/api/stats/${ lang }/${ props.start }/${ props.end }` ).then( 
+                ( r ) => {
+                    return r.json();
+                }
+            ).then(
+                ( data ) => parseAndUseData(data)
+            )
+        }
 
         return {
             totalAll,

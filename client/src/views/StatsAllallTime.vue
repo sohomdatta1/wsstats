@@ -1,10 +1,10 @@
 <template>
-    <div v-for="l of allLangs" v-if="loaded">
+    <div v-for="(shortData, l) in allData" v-if="loaded">
         <div class="heading-for-each-wikisource">
             <h2 v-if="l === 'old'">wikisource.org</h2>
             <h2 v-else>{{ l }}.wikisource.org</h2>
         </div>
-        <intial-stat-view :lang="l" :start="start" :end="end" :showChange="showChange" :showCharts="true" :filtering="filtering" :short="short"></intial-stat-view>
+        <intial-stat-view :lang="l" :start="start" :end="end" :showChange="showChange" :showCharts="true" :filtering="filtering" :short="short" :shortData="shortData"></intial-stat-view>
     </div>
 </template>
 
@@ -16,12 +16,12 @@ export default defineComponent({
     name: 'StatsAllAllTime',
     components: {IntialStatView},
     setup() {
-        const allLangs: Ref<Array<string>> = ref([]);
+        const allData: Ref<Object> = ref([]);
         const loaded = ref(false);
-        fetch( '/api/all_langs' )
+        fetch( '/api/alllangalltime' )
         .then( ( resp ) => resp.json() )
         .then( ( val ) => {
-            allLangs.value = val;
+            allData.value = val;
             loaded.value = true;
         });
         const tmEnd = new Date();
@@ -29,14 +29,15 @@ export default defineComponent({
         tmEnd.setMinutes(0);
         tmEnd.setSeconds(0);
         return {
-            allLangs,
+            allData,
             loaded,
             start: '0',
             end: String( Math.floor( tmEnd.getTime() / 1000 ) ),
             showChange: false,
             showCharts: true,
             filtering: 'year',
-            short: true
+            short: true,
+            shortData: true
         }
     },
 })

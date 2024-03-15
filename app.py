@@ -25,6 +25,17 @@ def stats(lang: str, start_time: int, end_time: int):
             'success': True
         }
 
+@app.route('/api/alllangalltime')
+def alllangalltime():
+    alldata= {}
+    with get_conn().cursor() as cursor:
+        for dom in domains:
+            cursor.execute(f'SELECT * FROM `stats_{dom}`')
+            res = cursor.fetchall()
+            alldata[dom] = {}
+            alldata[dom]['data'] = res
+    return alldata 
+
 @app.route('/api/all_langs')
 def all_langs():
     doms = list(domains)
