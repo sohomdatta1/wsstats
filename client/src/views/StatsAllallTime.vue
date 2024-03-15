@@ -6,15 +6,17 @@
         </div>
         <intial-stat-view :lang="l" :start="start" :end="end" :showChange="showChange" :showCharts="true" :filtering="filtering" :short="short" :shortData="shortData"></intial-stat-view>
     </div>
+    <cdx-progress-bar inline v-else></cdx-progress-bar>
 </template>
 
 <script lang="ts">
 import { ref, type Ref, defineComponent } from 'vue'
 import IntialStatView from '../components/IntialStatView.vue';
+import { CdxProgressBar } from '@wikimedia/codex';
 
 export default defineComponent({
     name: 'StatsAllAllTime',
-    components: {IntialStatView},
+    components: {IntialStatView, CdxProgressBar},
     setup() {
         const allData: Ref<Object> = ref([]);
         const loaded = ref(false);
