@@ -5,6 +5,7 @@ import StatsYearView from '@/views/StatsYearView.vue'
 import StatsLastMonth from '@/views/StatsLastMonth.vue'
 import StatsLastWeek from '@/views/StatsLastWeek.vue'
 import StatsAllTime from '@/views/StatsAllTime.vue'
+import StatsAllAllTime from '@/views/StatsAllallTime.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/stats/:lang/alltime',
       name: 'all-time',
       component: StatsAllTime
+    },
+    {
+      path: '/stats/all/alltime',
+      name: 'all-all-time',
+      component: StatsAllAllTime
     }
   ]
 })

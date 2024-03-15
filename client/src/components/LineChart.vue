@@ -10,7 +10,8 @@
     PointElement,
     LineElement,
     Title,
-    Tooltip
+    Tooltip,
+    Filler
   } from 'chart.js'
   import { Line } from 'vue-chartjs'
   
@@ -20,7 +21,8 @@
     PointElement,
     LineElement,
     Title,
-    Tooltip
+    Tooltip,
+    Filler
   )
   
   export default {

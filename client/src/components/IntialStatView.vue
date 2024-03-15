@@ -8,11 +8,30 @@
             </template>
             <template #description>
                 {{ totalAll }} <span class="change-num" v-if="$props.showChange">({{ changeAll }})</span>
+                <div class="pr-percentage-wrapper">
+                    <div class="pr-percentage-bar">
+                        <div class="pr-percentage-bar-inner" :style="{ width: `${percentagePr}%` }"></div>
+                    </div>
+                    {{ isNaN(percentagePr) ? 0 : percentagePr }}% of the pages are proofread
+                </div>
+
                 <line-chart-vue v-if="loaded && $props.showCharts" :chartData="chartAll" :chartOptions="chartOptions"></line-chart-vue>
+            </template>
+        </cdx-card>
+        <cdx-card 
+            :class="changeValidated > 0 ? 'up' : changeValidated == 0 ? 'pause' : 'down'"
+            :icon="changeProofread > 0 ? cdxIconCollapse : changeProofread == 0 ? cdxIconPause : cdxIconExpand">
+            <template #title>
+                Number of texts
+            </template>
+            <template #description>
+                {{ totalTexts }} <span class="change-num" v-if="$props.showChange">({{ changeTexts }})</span>
+                <line-chart-vue v-if="loaded && $props.showCharts" :chartData="chartText" :chartOptions="chartOptions"></line-chart-vue>
             </template>
         </cdx-card>
         <cdx-card
             :class="changeTrans > 0 ? 'up' : changeTrans == 0 ? 'pause' : 'down'"
+            v-if="!$props.short"
             :icon="changeTrans > 0 ? cdxIconCollapse : changeTrans == 0 ? cdxIconPause : cdxIconExpand">
             <template #title>
                 Number of transclusions
@@ -24,6 +43,7 @@
         </cdx-card>
         <cdx-card
             :class="changeWithoutText > 0 ? 'up' : changeWithoutText == 0 ? 'pause' : 'down'"
+            v-if="!$props.short"
             :icon="changeWithoutText > 0 ? cdxIconCollapse : changeWithoutText == 0 ? cdxIconPause : cdxIconExpand">
             <template #title>
                 Number of pages without text
@@ -35,6 +55,7 @@
         </cdx-card>
         <cdx-card
             :class="changeUnproofread > 0 ? 'down' : changeUnproofread == 0 ? 'pause' : 'up'"
+            v-if="!$props.short"
             :icon="changeUnproofread > 0 ? cdxIconCollapse : changeUnproofread == 0 ? cdxIconPause : cdxIconExpand">
             <template #title>
                 Number of unproofread pages 
@@ -46,6 +67,7 @@
         </cdx-card>
         <cdx-card
             :class="changeProblematic > 0 ? 'down' : changeProblematic == 0 ? 'pause' : 'up'"
+            v-if="!$props.short"
             :icon="changeProblematic > 0 ? cdxIconCollapse : changeProblematic == 0 ? cdxIconPause : cdxIconExpand">
             <template #title>
                 Number of problematic pages 
@@ -57,6 +79,7 @@
         </cdx-card>
         <cdx-card 
             :class="[changeProofread > 0 ? 'up' : changeProofread == 0 ? 'pause' : 'down']"
+            v-if="!$props.short"
             :icon="changeProofread > 0 ? cdxIconCollapse : changeProofread == 0 ? cdxIconPause : cdxIconExpand">
             <template #title>
                 Number of proofread pages
@@ -68,6 +91,7 @@
         </cdx-card>
         <cdx-card 
             :class="changeValidated > 0 ? 'up' : changeValidated == 0 ? 'pause' : 'down'"
+            v-if="!$props.short"
             :icon="changeValidated > 0 ? cdxIconCollapse : changeValidated == 0 ? cdxIconPause : cdxIconExpand">
             <template #title>
                 Number of validated pages 
@@ -79,6 +103,7 @@
         </cdx-card>
         <cdx-card 
             :class="changeValidated > 0 ? 'up' : changeValidated == 0 ? 'pause' : 'down'"
+            v-if="!$props.short"
             :icon="changeProofread > 0 ? cdxIconCollapse : changeProofread == 0 ? cdxIconPause : cdxIconExpand">
             <template #title>
                 Number of disambiguated pages
@@ -106,7 +131,9 @@ export default defineComponent({
         "end": String,
         "showChange": Boolean,
         "showCharts": Boolean,
-        "filtering": String
+        "filtering": String,
+        "pageType": String,
+        "short": Boolean
     },
     components: {
         CdxCard,
@@ -144,7 +171,9 @@ export default defineComponent({
         const totalProofread = ref(0);
         const totalValidated = ref(0);
         const totalWithoutText = ref(0);
+        const totalTexts =  ref(0);
         const totalDab = ref(0);
+        const percentagePr = ref(0);
         const changeAll = ref(0);
         const changeTrans = ref(0);
         const changeUnproofread = ref(0);
@@ -152,6 +181,7 @@ export default defineComponent({
         const changeProofread = ref(0);
         const changeWithoutText = ref(0);
         const changeValidated = ref(0);
+        const changeTexts = ref(0);
         const changeDab = ref(0);
         const chartAll = ref({});
         const chartTrans = ref({});
@@ -160,24 +190,8 @@ export default defineComponent({
         const chartProofread = ref({});
         const chartValidated = ref({});
         const chartWithoutText = ref({});
+        const chartText = ref({});
         const chartDab = ref({});
-        const DAYS_IN_MONTH = [
-            31,
-            28,
-            31,
-            30,
-            31,
-            30,
-            31,
-            31,
-            30,
-            31,
-            30,
-            31
-        ];
-        function isValidEndOfMonth(dt: string) {
-            return dt.slice(0,2) + '-' + String( DAYS_IN_MONTH[parseInt(dt.slice(0,2))] ) === dt;
-        }
         const lang = props.lang;
         fetch( `/api/stats/${ lang }/${ props.start }/${ props.end }` ).then( 
             ( r ) => {
@@ -191,18 +205,22 @@ export default defineComponent({
                 totalAll.value = currentData[1];
                 totalWithoutText.value = currentData[2];
                 totalProblematic.value = currentData[3];
-                totalUnproofread.value = currentData[4];
-                totalProofread.value = currentData[5];
-                totalValidated.value = currentData[6];
-                totalTrans.value = currentData[7];
+                totalUnproofread.value = currentData[1] - ( currentData[2] + currentData[3] + currentData[4] + currentData[5] );
+                // round to two places after decimal point
+                percentagePr.value =  Math.round((( currentData[4] + currentData[5] ) / currentData[1]) * 10000) / 100;
+                totalProofread.value = currentData[4];
+                totalValidated.value = currentData[5];
+                totalTrans.value = currentData[6];
+                totalTexts.value = currentData[7]
                 totalDab.value = currentData[8];
                 changeAll.value = currentData[1] - dataBefore[1];
                 changeWithoutText.value = currentData[2] - dataBefore[2];
                 changeProblematic.value = currentData[3] - dataBefore[3];
-                changeUnproofread.value = currentData[4] - dataBefore[4];
-                changeProofread.value = currentData[5] - dataBefore[5];
-                changeValidated.value = currentData[6] - dataBefore[6];
-                changeTrans.value = currentData[7] - dataBefore[7];
+                changeUnproofread.value = totalUnproofread.value - (dataBefore[1] - ( dataBefore[2] + dataBefore[3] + dataBefore[4] + dataBefore[5] ) );
+                changeProofread.value = currentData[4] - dataBefore[4];
+                changeValidated.value = currentData[5] - dataBefore[5];
+                changeTrans.value = currentData[6] - dataBefore[6];
+                changeTexts.value = currentData[7] - dataBefore[7];
                 changeDab.value = currentData[8] - dataBefore[8];
                 let serializedData: Array<Array<number>> = [[], [], [], [], [], [], [], [], []];
                 let serializedLabels = [];
@@ -250,6 +268,9 @@ export default defineComponent({
                             }
                         ]
                 };
+                const unProofreadPagesData = serializedData[1].map((val, idx) => val - (
+                    serializedData[2][idx] + serializedData[3][idx] + serializedData[3][idx] + serializedData[4][idx] + serializedData[5][idx]
+                ));
                 generalDataStructure.datasets[0].label = 'All pages without text'
                 generalDataStructure.datasets[0].data = serializedData[2];
                 chartWithoutText.value = clone( generalDataStructure );
@@ -257,17 +278,40 @@ export default defineComponent({
                 generalDataStructure.datasets[0].data = serializedData[3];
                 chartProblematic.value = clone( generalDataStructure );
                 generalDataStructure.datasets[0].label = 'All pages that have not been proofread'
-                generalDataStructure.datasets[0].data = serializedData[4];
+                generalDataStructure.datasets[0].data = unProofreadPagesData;
                 chartUnproofread.value = clone( generalDataStructure );
                 generalDataStructure.datasets[0].label = 'All proofread pages'
-                generalDataStructure.datasets[0].data = serializedData[5];
+                generalDataStructure.datasets[0].data = serializedData[4];
                 chartProofread.value = clone( generalDataStructure );
                 generalDataStructure.datasets[0].label = 'All validated pages'
-                generalDataStructure.datasets[0].data = serializedData[6];
+                generalDataStructure.datasets[0].data = serializedData[5];
                 chartValidated.value = clone( generalDataStructure );
                 generalDataStructure.datasets[0].label = 'All transcluded pages'
-                generalDataStructure.datasets[0].data = serializedData[7];
+                generalDataStructure.datasets[0].data = serializedData[6];
                 chartTrans.value = clone( generalDataStructure );
+                const nakedTexts = serializedData[7].map((val, idx) => val - serializedData[6][idx] - serializedData[8][idx])
+                chartText.value = {
+                    labels: actualLabels,
+                    datasets: [
+                        {
+                            label: 'Naked texts',
+                            backgroundColor: '#d73333',
+                            borderColor: '#d73333',
+                            data: nakedTexts,
+                            spanGaps: true,
+                            fill: 'start'
+                        },
+                        {
+                            label: 'All texts',
+                            backgroundColor: '#447ff5',
+                            borderColor: '#447ff5',
+                            data: serializedData[7],
+                            spanGaps: true,
+                            fill: 'start'
+                        }
+
+                    ]
+                };
                 generalDataStructure.datasets[0].label = 'Disambiguation pages'
                 generalDataStructure.datasets[0].data = serializedData[8];
                 chartDab.value = generalDataStructure;
@@ -277,35 +321,46 @@ export default defineComponent({
                             {
                                 label: 'Pages without text',
                                 backgroundColor: '#ddd',
+                                borderColor: '#ddd',
                                 data: serializedData[2],
-                                spanGaps: true
+                                spanGaps: true,
+                                fill: 'start'
                             },
                             {
                                 label: 'Problematic pages',
                                 backgroundColor: '#b0b0ff',
+                                borderColor: '#b0b0ff',
                                 data: serializedData[3].map((val, idx) => val + serializedData[2][idx]),
-                                spanGaps: true
+                                spanGaps: true,
+                                fill: 'start'
                             },
                             {
                                 label: 'Unproofread pages',
                                 backgroundColor: '#ffa0a0',
-                                data: serializedData[4].map((val, idx) => val + serializedData[3][idx] + serializedData[2][idx]),
-                                spanGaps: true
+                                borderColor: '#ffa0a0',
+                                data: unProofreadPagesData.map((val, idx) => val + serializedData[3][idx] + serializedData[2][idx]),
+                                spanGaps: true,
+                                fill: 'start'
                             },
                             {
                                 label: 'Proofread pages',
                                 backgroundColor: '#ffe867',
-                                data: serializedData[5].map((val, idx) => val + serializedData[3][idx] + serializedData[2][idx] + serializedData[4][idx]),
-                                spanGaps: true
+                                borderColor: '#ffe867',
+                                data: serializedData[4].map((val, idx) => val + serializedData[3][idx] + serializedData[2][idx] + unProofreadPagesData[idx]),
+                                spanGaps: true,
+                                fill: 'start'
                             },
                             {
                                 label: 'Validated pages',
                                 backgroundColor: '#90ff90',
-                                data: serializedData[6].map((val, idx) => val + serializedData[3][idx] + serializedData[2][idx] + serializedData[4][idx] + serializedData[5][idx]),
-                                spanGaps: true
+                                borderColor: '#90ff90',
+                                data: serializedData[5].map((val, idx) => val + serializedData[3][idx] + serializedData[2][idx] + serializedData[4][idx] + unProofreadPagesData[idx]),
+                                spanGaps: true,
+                                fill: 'start'
                             }
                         ]
                 };
+                
                 loaded.value = true;
             }
         )
@@ -318,7 +373,9 @@ export default defineComponent({
             totalProofread,
             totalValidated,
             totalWithoutText,
+            totalTexts,
             totalDab,
+            percentagePr,
             changeAll,
             changeProblematic,
             changeUnproofread,
@@ -326,6 +383,7 @@ export default defineComponent({
             changeValidated,
             changeTrans,
             changeWithoutText,
+            changeTexts,
             chartAll,
             chartTrans,
             chartWithoutText,
@@ -333,6 +391,7 @@ export default defineComponent({
             chartProofread,
             chartUnproofread,
             chartProblematic,
+            chartText,
             chartDab,
             loaded,
             changeDab
@@ -350,6 +409,24 @@ export default defineComponent({
     margin: auto;
     display: grid;
     grid-template-rows: auto auto;
+    box-sizing: border-box;
+}
+.pr-percentage-wrapper {
+    padding: @spacing-50;
+    padding-left: 0;
+}
+
+.pr-percentage-bar {
+    height: 1em;
+    width: 100%;
+    border-radius: @border-radius-pill;
+    border: @border-base;
+    box-sizing: border-box;
+}
+.pr-percentage-bar-inner {
+    height: 0.95em;
+    background: @color-progressive;
+    border-radius: @border-radius-pill;
 }
 .cdx-card {
     margin: @spacing-75;
