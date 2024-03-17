@@ -3,6 +3,7 @@ from replicadb import get_conn as get_replica_conn
 from ws_category import domain_urls as urls
 from domains import domains
 from datetime import datetime
+from edittemplates import edittemplates
 
 def catreq(cat, ns):
     return u"select /* SLOW_OK */ COUNT(cl_from) AS num FROM categorylinks WHERE cl_to='%s' AND cl_from IN (SELECT page_id FROM page WHERE page_namespace=%d)"%(cat,ns)
@@ -144,3 +145,5 @@ if __name__ == '__main__':
                                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''', all_stat)
             print('Commiting all this to a database')
             conn.commit()
+            print('Writing templates')
+            edittemplates(all_stats)
