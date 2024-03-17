@@ -2,7 +2,8 @@ import os
 import pywikibot as pwb
 
 bottmpldomains = [
-    'en'
+    'en',
+    'bn'
 ]
 
 def safe_put(page, num):
