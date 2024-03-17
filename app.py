@@ -21,6 +21,7 @@ cache = Cache(app)
 
 
 @app.route('/api/stats/<lang>/<int:start_time>/<int:end_time>')
+@cache.cached(timeout=86400)
 def stats(lang: str, start_time: int, end_time: int):
 
     if not ( lang in domains):
@@ -39,7 +40,7 @@ def stats(lang: str, start_time: int, end_time: int):
             'success': True
         }
 
-@app.route('/api/alllangalltime')
+@app.route('/api/all/alltime')
 @cache.cached(timeout=86400)
 def alllangalltime():
     alldata= {}
@@ -51,10 +52,26 @@ def alllangalltime():
             alldata[dom]['data'] = res
     return alldata 
 
+@app.route('/api/all/<int:start_time>/<int:end_time>')
+@cache.cached(timeout=86400)
+def alllangsstats(start_time: int, end_time: int):
+    alldata= {}
+    with get_conn().cursor() as cursor:
+        for dom in domains:
+            cursor.execute(f'SELECT * FROM `stats_{dom}` WHERE time BETWEEN %s AND %s', (
+                datetime.utcfromtimestamp(start_time).strftime("%Y-%m-%d %H:%M:%S"),
+                datetime.utcfromtimestamp(end_time).strftime("%Y-%m-%d %H:%M:%S")
+            ))
+            res = cursor.fetchall()
+            alldata[dom] = {}
+            alldata[dom]['data'] = res
+    return alldata
+
 @app.route('/api/all_langs')
 def all_langs():
     doms = list(domains)
     doms.sort()
+    doms.insert(0, 'all')
     return doms
 
 @app.route("/")

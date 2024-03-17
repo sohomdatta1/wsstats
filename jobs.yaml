@@ -1,0 +1,7 @@
+---
+- name: generate-new-data-daily
+  command: "generate_new_data"
+  email: all
+  schedule: "@daily"
+  mem: 1907Mi
+  mount: all

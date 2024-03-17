@@ -1,11 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import StatsYesterdayView from '../views/StatsYesterdayView.vue'
-import StatsYearView from '@/views/StatsYearView.vue'
-import StatsLastMonth from '@/views/StatsLastMonth.vue'
-import StatsLastWeek from '@/views/StatsLastWeek.vue'
-import StatsAllTime from '@/views/StatsAllTime.vue'
-import StatsAllAllTime from '@/views/StatsAllallTime.vue'
+import StatsView from '../views/StatsNormalView.vue'
+import StatsAllView from '@/views/StatsAllView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,32 +14,53 @@ const router = createRouter({
     {
       path: '/stats/:lang/yesterday',
       name: 'yesterday-stats',
-      component: StatsYesterdayView
+      component: StatsView
     },
     {
       path: '/stats/:lang/lastyear',
       name: 'lastyear-stats',
-      component: StatsYearView
+      component: StatsView
     },
     {
       path: '/stats/:lang/lastmonth',
       name: 'lastmonth-stats',
-      component: StatsLastMonth
+      component: StatsView
     },
     {
       path: '/stats/:lang/lastweek',
       name: 'lastweek-stats',
-      component: StatsLastWeek
+      component: StatsView
     },
     {
       path: '/stats/:lang/alltime',
       name: 'all-time',
-      component: StatsAllTime
+      component: StatsView
     },
     {
       path: '/stats/all/alltime',
       name: 'all-all-time',
-      component: StatsAllAllTime
+      component: StatsAllView
+    },
+    {
+      path: '/stats/all/yesterday',
+      name: 'all-yesterday',
+      component: StatsAllView
+    },
+    {
+      path: '/stats/all/lastweek',
+      name: 'all-lastweek',
+      component: StatsAllView
+    },
+    {
+      path: '/stats/all/lastyear',
+      name: 'all-lastyear',
+      component: StatsAllView
+    },
+
+    {
+      path: '/stats/all/lastmonth',
+      name: 'all-lastmonth',
+      component: StatsAllView
     }
   ]
 })

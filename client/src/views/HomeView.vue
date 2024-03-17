@@ -5,6 +5,7 @@
         <cdx-select 
         :menu-items="menuItems"
         v-model:selected="selectedLang"
+        @update:selected="onSelect"
         default-label="Choose a language">
         </cdx-select>
         <template #label>
@@ -50,28 +51,34 @@ export default defineComponent({
   components: { CdxSelect, CdxTextInput, CdxField, CdxToggleButtonGroup, CdxButton },
   setup() {
     const menuItems = ref<MenuItemData[]>([]);
-    const buttonGroup = [
+    let defaultButtons = [
       {
         label: 'Yesterday',
         value: 'yesterday',
+        disabled: false,
       },
       {
         label: 'Last 7 days',
-        value: 'lastweek'
+        value: 'lastweek',
+        disabled: false,
       },
       {
         label: 'Last 30 days',
-        value: 'lastmonth'
+        value: 'lastmonth',
+        disabled: false,
       },
       {
         label: 'Last 365 days',
-        value: 'lastyear'
+        value: 'lastyear',
+        disabled: false,
       },
       {
         label: 'All time',
-        value: 'alltime'
+        value: 'alltime',
+        disabled: false,
       }
     ];
+    const buttonGroup = ref(defaultButtons);
     const selectedLang = ref<string|number|null>(null);
     const selectedTime = ref<string|number|null>('yesterday');
     fetch( '/api/all_langs' )
@@ -87,6 +94,20 @@ export default defineComponent({
         menuItems.value = menuList;
       } )
 
+      function onSelect(val: string) {
+        console.log( val );
+        if ( val === 'all' ) {
+          defaultButtons[0].disabled = true;
+          if ( selectedTime.value === 'yesterday' ) {
+            selectedTime.value = 'lastweek';
+          }
+          buttonGroup.value = defaultButtons;
+        } else {
+          defaultButtons[0].disabled = false;
+          buttonGroup.value = defaultButtons;
+        }
+      }
+
       function onClick() {
         window.location.href = `stats/${ selectedLang.value }/${ selectedTime.value }`
       }
@@ -95,6 +116,7 @@ export default defineComponent({
         selectedTime,
         buttonGroup,
         menuItems,
+        onSelect,
         menuConfig: {
           visibleItemLimit: 6
         },
@@ -108,7 +130,7 @@ export default defineComponent({
 <style lang="less" scoped>
 @import '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 .container {
-  width: @size-half;
+  width: 75%;
   margin: auto;
   padding: @spacing-125;
   background: @color-inverted;
