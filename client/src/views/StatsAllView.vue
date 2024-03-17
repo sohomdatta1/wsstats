@@ -42,7 +42,6 @@ export default defineComponent({
             let tmStart = new Date();
             tmStart.setDate( tmEnd.getDate() - 365 );
             fetchurlend = `${ serializeTm( tmStart ) }/${ serializeTm( tmEnd ) }`
-            filtering.value = 'month';
         } else if ( path.endsWith( 'lastmonth' ) ) {
             let tmStart = new Date();
             tmStart.setDate( tmEnd.getDate() - 30 );
