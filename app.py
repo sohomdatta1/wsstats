@@ -39,6 +39,13 @@ def stats(lang: str, start_time: int, end_time: int):
             'data': res,
             'success': True
         }
+    
+@app.route('/api/lastcrawl')
+def lastcrawl():
+    with get_conn().cursor() as cursor:
+        cursor.execute('select MAX(time) from stats_en')
+        res = cursor.fetchall()
+    return [ res[0][0] ]
 
 @app.route('/api/all/alltime')
 @cache.cached(timeout=86400)

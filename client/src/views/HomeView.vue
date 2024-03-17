@@ -45,6 +45,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { CdxTextInput, CdxSelect, CdxField, type MenuItemData, CdxToggleButtonGroup, CdxButton } from '@wikimedia/codex';
+import clone from '../components/util';
 
 export default defineComponent({
   name: 'HomeView',
@@ -95,15 +96,14 @@ export default defineComponent({
       } )
 
       function onSelect(val: string) {
-        console.log( val );
         if ( val === 'all' ) {
-          defaultButtons[0].disabled = true;
+          const disabledYesterday = clone( defaultButtons );
+          disabledYesterday[0].disabled = true;
           if ( selectedTime.value === 'yesterday' ) {
             selectedTime.value = 'lastweek';
           }
-          buttonGroup.value = defaultButtons;
+          buttonGroup.value = disabledYesterday;
         } else {
-          defaultButtons[0].disabled = false;
           buttonGroup.value = defaultButtons;
         }
       }
