@@ -46,7 +46,7 @@ export default defineComponent({
             let tmStart = new Date();
             tmStart.setDate( tmEnd.getDate() - 30 );
             fetchurlend = `${ serializeTm( tmStart ) }/${ serializeTm( tmEnd ) }`
-            filtering.value = 'month';
+            filtering.value = 'day';
         } else if ( path.endsWith( 'alltime' ) ) {
             fetchurlend = `0/${ serializeTm( tmEnd ) }`
             filtering.value = 'year';
