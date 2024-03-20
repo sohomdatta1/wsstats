@@ -215,8 +215,8 @@ export default defineComponent({
                 totalValidated.value = currentData[5];
                 totalTrans.value = currentData[6];
                 totalTexts.value = currentData[7];
-                percentageScanned.value = Math.round(( ( totalTrans.value + totalDab.value ) / totalTexts.value ) * 10000) / 100;
                 totalDab.value = currentData[8];
+                percentageScanned.value = Math.round(( ( totalTrans.value + totalDab.value ) / totalTexts.value ) * 10000) / 100;
                 changeAll.value = currentData[1] - dataBefore[1];
                 changeWithoutText.value = currentData[2] - dataBefore[2];
                 changeProblematic.value = currentData[3] - dataBefore[3];
