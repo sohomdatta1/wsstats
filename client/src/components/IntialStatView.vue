@@ -30,7 +30,7 @@
                     <div class="pr-percentage-bar">
                         <div class="pr-percentage-bar-inner" :style="{ width: `${percentageScanned}%` }"></div>
                     </div>
-                    {{ isNaN(percentageScanned) ? 0 : percentageScanned }}% of the pages are proofread
+                    {{ isNaN(percentageScanned) ? 0 : percentageScanned }}% of the texts are transcluded for scans
                 </div>
                 <line-chart-vue v-if="loaded && $props.showCharts" :chartData="chartText" :chartOptions="chartOptions"></line-chart-vue>
             </template>
