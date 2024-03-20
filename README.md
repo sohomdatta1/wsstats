@@ -11,6 +11,13 @@ toolforge build start https://gitlab.wikimedia.org/toolforge-repos/wsstats.git
 toolforge webservice --backend=kubernetes --mount=none buildservice start
 ```
 
+To redeploy:
+
+```sh
+toolforge build start https://gitlab.wikimedia.org/toolforge-repos/wsstats.git
+toolforge webservice --backend=kubernetes --mount=none buildservice restart
+```
+
 To deploy the statistics crawler you can use the following commands:
 
 ```sh
