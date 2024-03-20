@@ -1,5 +1,5 @@
 <template>
-    <intial-stat-view :lang="lang" :start="start" :end="end" :showChange="showChange"></intial-stat-view>
+    <intial-stat-view :lang="lang" :start="start" :end="end" :showChange="showChange" :showCharts="showCharts" :filtering="filtering"></intial-stat-view>
 </template>
 <script lang="ts">
 import { ref, type Ref, defineComponent } from 'vue'
@@ -44,7 +44,9 @@ export default defineComponent({
             lang,
             start: serializeTm( tmStart ),
             end: serializeTm( tmEnd ),
-            showChange: true
+            showChange: true,
+            filtering,
+            showCharts: true
         }
     },
 })

@@ -26,6 +26,12 @@
             </template>
             <template #description>
                 {{ totalTexts }} <span class="change-num" v-if="$props.showChange">({{ changeTexts }})</span>
+                <div class="pr-percentage-wrapper">
+                    <div class="pr-percentage-bar">
+                        <div class="pr-percentage-bar-inner" :style="{ width: `${percentageScanned}%` }"></div>
+                    </div>
+                    {{ isNaN(percentageScanned) ? 0 : percentageScanned }}% of the pages are proofread
+                </div>
                 <line-chart-vue v-if="loaded && $props.showCharts" :chartData="chartText" :chartOptions="chartOptions"></line-chart-vue>
             </template>
         </cdx-card>
@@ -175,6 +181,7 @@ export default defineComponent({
         const totalTexts =  ref(0);
         const totalDab = ref(0);
         const percentagePr = ref(0);
+        const percentageScanned = ref(0);
         const changeAll = ref(0);
         const changeTrans = ref(0);
         const changeUnproofread = ref(0);
@@ -207,7 +214,8 @@ export default defineComponent({
                 totalProofread.value = currentData[4];
                 totalValidated.value = currentData[5];
                 totalTrans.value = currentData[6];
-                totalTexts.value = currentData[7]
+                totalTexts.value = currentData[7];
+                percentageScanned.value = Math.round((( totalTexts.value - ( totalTrans.value + totalDab.value ) ) / totalTexts.value ) * 10000) / 100;
                 totalDab.value = currentData[8];
                 changeAll.value = currentData[1] - dataBefore[1];
                 changeWithoutText.value = currentData[2] - dataBefore[2];
@@ -384,6 +392,7 @@ export default defineComponent({
             totalTexts,
             totalDab,
             percentagePr,
+            percentageScanned,
             changeAll,
             changeProblematic,
             changeUnproofread,
