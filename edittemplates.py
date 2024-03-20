@@ -6,9 +6,9 @@ bottmpldomains = [
     'pl'
 ]
 
-def safe_put(page, num):
+def safe_put(page: pwb.Page, num):
     page.text = num
-    page.save('Unattended update of statistics templates (ping [[User talk:Sohom Datta|Sohom Datta]] for questions)')
+    page.save('Unattended update of statistics templates', botflag=True)
 
 def spaced_int(i,sep):
     result = repr(i)[-3:]
