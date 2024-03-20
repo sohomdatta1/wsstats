@@ -46,7 +46,7 @@ export default defineComponent({
             end: serializeTm( tmEnd ),
             showChange: true,
             filtering,
-            showCharts: true
+            showCharts
         }
     },
 })
