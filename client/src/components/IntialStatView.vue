@@ -214,7 +214,7 @@ export default defineComponent({
                 totalProofread.value = currentData[4];
                 totalValidated.value = currentData[5];
                 totalTrans.value = currentData[6];
-                totalTexts.value = currentData[7];
+                totalTexts.value = currentData[7] - 1;
                 totalDab.value = currentData[8];
                 percentageScanned.value = Math.round(( ( totalTrans.value + totalDab.value ) / totalTexts.value ) * 10000) / 100;
                 changeAll.value = currentData[1] - dataBefore[1];
