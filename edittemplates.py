@@ -5,7 +5,8 @@ bottmpldomains = [
     'it',
     'pl',
     'en',
-    'fr'
+    'fr',
+    'bn'
 ]
 
 def safe_put(page: pwb.Page, num):
