@@ -1,5 +1,9 @@
 <template>
     <div class="initial-stats-container">
+        <div class="heading-for-each-wikisource">
+                <h2 v-if="lang === 'old'">wikisource.org</h2>
+                <h2 v-else>{{ lang }}.wikisource.org</h2>
+            </div>
         <cdx-card
             :class="changeAll > 0 ? 'up' : changeAll == 0 ? 'pause' : 'down'"
             :icon="changeAll > 0 ? cdxIconCollapse : changeAll == 0 ? cdxIconPause : cdxIconExpand">
@@ -463,5 +467,17 @@ export default defineComponent({
 .pause .cdx-icon,
 .pause .change-num {
     color: @color-warning;
+}
+.heading-for-each-wikisource {
+    width: 100%;
+    margin: auto;
+    padding: @spacing-100;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: @background-color-interactive;
+    h2 {
+        margin: 0;
+    }
 }
 </style>

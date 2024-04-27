@@ -1,11 +1,17 @@
 <template>
   <div class="container">
     <template v-if="menuItems.length > 0">
+      <div class="quick-links">Quick links: <ul>
+        <li><a href="/stats/all/alltime">All languages for all time</a></li>
+        <li><a href="/stats/all/lastyear">All languages over the last year</a></li>
+        <li><a href="/stats/all/lastmonth">All languages over the last month</a></li>
+        <li><a href="/stats/all/lastweek">All languages over the last week</a></li>
+        <li><a href="/stats/all/yesterday">All languages over the last day</a></li>
+      </ul></div>
       <cdx-field>
         <cdx-select 
         :menu-items="menuItems"
-        v-model:selected="selectedLang"
-        @update:selected="onSelect"
+        v-model="selectedLang"
         default-label="Choose a language">
         </cdx-select>
         <template #label>
@@ -13,7 +19,7 @@
         </template>
       </cdx-field>
       <cdx-field>
-        <cdx-toggle-button-group :buttons="buttonGroup" v-model:model-value="selectedTime"></cdx-toggle-button-group>
+        <cdx-toggle-button-group :buttons="buttonGroup" v-model="selectedTime"></cdx-toggle-button-group>
         <template #label>
           Time period
         </template>
@@ -45,7 +51,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { CdxTextInput, CdxSelect, CdxField, type MenuItemData, CdxToggleButtonGroup, CdxButton } from '@wikimedia/codex';
-import clone from '../components/util';
 
 export default defineComponent({
   name: 'HomeView',
@@ -95,19 +100,6 @@ export default defineComponent({
         menuItems.value = menuList;
       } )
 
-      function onSelect(val: string) {
-        if ( val === 'all' ) {
-          const disabledYesterday = clone( defaultButtons );
-          disabledYesterday[0].disabled = true;
-          if ( selectedTime.value === 'yesterday' ) {
-            selectedTime.value = 'lastweek';
-          }
-          buttonGroup.value = disabledYesterday;
-        } else {
-          buttonGroup.value = defaultButtons;
-        }
-      }
-
       function onClick() {
         window.location.href = `stats/${ selectedLang.value }/${ selectedTime.value }`
       }
@@ -116,7 +108,6 @@ export default defineComponent({
         selectedTime,
         buttonGroup,
         menuItems,
-        onSelect,
         menuConfig: {
           visibleItemLimit: 6
         },
@@ -129,12 +120,27 @@ export default defineComponent({
 
 <style lang="less" scoped>
 @import '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
+@import ( reference ) '@wikimedia/codex/mixins/link.less';
+
 .container {
   width: 75%;
   margin: auto;
   padding: @spacing-125;
   background: @color-inverted;
   height: @size-full;
+}
+.quick-links ul {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+.quick-links ul > li {
+  display: inline-block;
+  padding: @spacing-50;
+}
+
+a {
+	.cdx-mixin-link();
 }
 </style>
 

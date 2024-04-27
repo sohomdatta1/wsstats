@@ -61,6 +61,11 @@ const router = createRouter({
       path: '/stats/all/lastmonth',
       name: 'all-lastmonth',
       component: StatsAllView
+    },
+    {
+      path: '/stats/all/yesterday',
+      name: 'yesterday-all-stats',
+      component: StatsAllView
     }
   ]
 })
