@@ -11,8 +11,7 @@
       <cdx-field>
         <cdx-select 
         :menu-items="menuItems"
-        v-model="selectedLang"
-        @update="onSelect"
+        v-model:selected="selectedLang"
         default-label="Choose a language">
         </cdx-select>
         <template #label>
@@ -52,7 +51,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { CdxTextInput, CdxSelect, CdxField, type MenuItemData, CdxToggleButtonGroup, CdxButton } from '@wikimedia/codex';
-import clone from '../components/util';
 
 export default defineComponent({
   name: 'HomeView',
@@ -102,20 +100,6 @@ export default defineComponent({
         menuItems.value = menuList;
       } )
 
-      function onSelect(val: string) {
-        if ( val === 'all' ) {
-          const disabledYesterday = clone( defaultButtons );
-          disabledYesterday[0].disabled = true;
-          if ( selectedTime.value === 'yesterday' ) {
-            selectedTime.value = 'lastweek';
-          }
-          buttonGroup.value = disabledYesterday;
-        } else {
-          buttonGroup.value = defaultButtons;
-        }
-        selectedLang.value = val;
-      }
-
       function onClick() {
         window.location.href = `stats/${ selectedLang.value }/${ selectedTime.value }`
       }
@@ -124,7 +108,6 @@ export default defineComponent({
         selectedTime,
         buttonGroup,
         menuItems,
-        onSelect,
         menuConfig: {
           visibleItemLimit: 6
         },
