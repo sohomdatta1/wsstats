@@ -1,6 +1,7 @@
 __pycache__
 replica.my.cnf
 .env
+env
 logs
 apicache
 throttle.ctrl
