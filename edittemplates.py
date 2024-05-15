@@ -9,9 +9,17 @@ bottmpldomains = [
     'bn'
 ]
 
+boteditsummaries = {
+    'bn': 'বট টেমপ্লেট হালনাগাদ করছে',
+    'default': 'Unattended update of statistics templates',
+}
+
 def safe_put(page: pwb.Page, num):
     page.text = num
-    page.save('Unattended update of statistics templates', botflag=True)
+    if page.site.code in boteditsummaries:
+        page.save(boteditsummaries[page.site.code], botflag=True)
+    else:
+        page.save(boteditsummaries['default'], botflag=True)
 
 def spaced_int(i,sep):
     result = repr(i)[-3:]
